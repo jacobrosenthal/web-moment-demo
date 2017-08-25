@@ -6,21 +6,6 @@
         JS_TX_CHAR_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e',
         JS_RX_CHAR_UUID = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 
-  function chunkArray(array, chunkSize){
-    var chunks = [];
-    for (let i = 0; i < array.length; i += chunkSize) {
-      chunks.push(array.slice(i, i + chunkSize));
-    }
-    return chunks;
-  }
-
-  //https://gist.github.com/tokland/71c483c89903da417d7062af009da571
-  function promiseMap(items, mapper) {
-    const reducer = (promise, item) => 
-      promise.then(mappedItems => mapper(item).then(res => mappedItems.concat([res])));
-    return items.reduce(reducer, Promise.resolve([]));
-  }
-
   class Moment {
     constructor() {
       this.device = null;
@@ -70,6 +55,22 @@
     // chunks your arrayBuffer and sends one 20 byte Uint8Array at a time, will reject on first failure with no retries
     // like characteristic.writeValue, returns a promise with undefined on success
     sendArrayBuffer(ab) {
+
+      function chunkArray(array, chunkSize){
+        var chunks = [];
+        for (let i = 0; i < array.length; i += chunkSize) {
+          chunks.push(array.slice(i, i + chunkSize));
+        }
+        return chunks;
+      }
+
+      //https://gist.github.com/tokland/71c483c89903da417d7062af009da571
+      function promiseMap(items, mapper) {
+        const reducer = (promise, item) => 
+          promise.then(mappedItems => mapper(item).then(res => mappedItems.concat([res])));
+        return items.reduce(reducer, Promise.resolve([]));
+      }
+
       const chunks = chunkArray(new Uint8Array(ab), 20);
       return promiseMap(chunks, this._writeCharacteristicValue.bind(this, JS_TX_CHAR_UUID))
         .then(function(result){
