@@ -15,7 +15,6 @@
   }
 
   //https://gist.github.com/tokland/71c483c89903da417d7062af009da571
-  //todo not sure it would return on the first error..
   function promiseMap(items, mapper) {
     const reducer = (promise, item) => 
       promise.then(mappedItems => mapper(item).then(res => mappedItems.concat([res])));
@@ -68,9 +67,16 @@
         }
       });
     }
+    // chunks your arrayBuffer and sends one 20 byte Uint8Array at a time, will reject on first failure with no retries
+    // like characteristic.writeValue, returns a promise with undefined on success
     sendArrayBuffer(ab) {
       const chunks = chunkArray(new Uint8Array(ab), 20);
-      return promiseMap(chunks, this._writeCharacteristicValue.bind(this, JS_TX_CHAR_UUID));
+      return promiseMap(chunks, this._writeCharacteristicValue.bind(this, JS_TX_CHAR_UUID))
+        .then(function(result){
+          // we never get here except on success, result is [undefined] or an array of [,,]
+          // just return undefined as characteristic.writeValue does
+          return undefined;
+        });
     }
 
     /* Moment Service */

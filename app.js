@@ -21,11 +21,11 @@ statusText.addEventListener('click', function() {
     return compiled;
   })
   .then(moment.sendArrayBuffer.bind(moment))
-  .then(resultsArray => {
-    console.log("resultsArray " + resultsArray);
-    statusText.textContent = 'Sent';
+  .then(() => {
+    statusText.textContent = 'Finshed sending';
   })
   .catch(error => {
+    console.log(error);
     statusText.textContent = error;
   });
 });
