@@ -99,15 +99,6 @@
         });
     }
 
-    /* Moment Service */
-
-    startNotificationsMomentJS() {
-      return this._startNotifications(JS_RX_CHAR_UUID);
-    }
-    stopNotificationsMomentJS() {
-      return this._stopNotifications(JS_RX_CHAR_UUID);
-    }
-
     /* Utils */
 
     _cacheCharacteristic(service, characteristicUuid) {
