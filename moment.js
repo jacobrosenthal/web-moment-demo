@@ -94,9 +94,13 @@
       return promiseMap(chunks, this._writeCharacteristicValue.bind(this, JS_TX_CHAR_UUID))
         .then(function(result){
           // we never get here except on success, result is [undefined] or an array of [,,]
-          // just return undefined as characteristic.writeValue does
-          return undefined;
+          // instead of just return undefined as characteristic.writeValue does, return the chunked data we sent
+          return chunks;
         });
+    }
+    compileAndSend(jsString) {
+      return this.compileJSString(jsString)
+        .then(this.sendArrayBuffer.bind(this))
     }
 
     /* Utils */
