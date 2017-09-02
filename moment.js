@@ -56,12 +56,28 @@
     // like characteristic.writeValue, returns a promise with undefined on success
     sendArrayBuffer(ab) {
 
+      //is it just me or are arraybuffers a nightmare without the 100 polyfills otherwise available in npm
       function chunkArray(array, chunkSize){
         var chunks = [];
         for (let i = 0; i < array.length; i += chunkSize) {
           chunks.push(array.slice(i, i + chunkSize));
         }
         return chunks;
+      }
+
+      //http://2ality.com/2015/10/concatenating-typed-arrays.html
+      function concatenate(resultConstructor, ...arrays) {
+          let totalLength = 0;
+          for (let arr of arrays) {
+              totalLength += arr.length;
+          }
+          let result = new resultConstructor(totalLength);
+          let offset = 0;
+          for (let arr of arrays) {
+              result.set(arr, offset);
+              offset += arr.length;
+          }
+          return result;
       }
 
       //https://gist.github.com/tokland/71c483c89903da417d7062af009da571
@@ -71,7 +87,10 @@
         return items.reduce(reducer, Promise.resolve([]));
       }
 
-      const chunks = chunkArray(new Uint8Array(ab), 20);
+      var packetCount = Math.ceil((ab.byteLength + 1) / 20);
+      var frame = concatenate(Uint8Array, Uint8Array.of(packetCount), new Uint8Array(ab));
+      const chunks = chunkArray(frame, 20);
+
       return promiseMap(chunks, this._writeCharacteristicValue.bind(this, JS_TX_CHAR_UUID))
         .then(function(result){
           // we never get here except on success, result is [undefined] or an array of [,,]
