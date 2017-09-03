@@ -12,6 +12,10 @@ statusText.addEventListener('click', function() {
   statusText.textContent = 'Connecting...';
   moment.connect()
   .then(() => {
+    moment.device.addEventListener('gattserverdisconnected', function(){
+      statusText.textContent = 'Disconnected';
+    });
+
     statusText.textContent = 'Connected, you may now send';
   })
   .catch(error => {
