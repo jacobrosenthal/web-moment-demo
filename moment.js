@@ -3,8 +3,7 @@
 
   const MOMENT_UUID     = 'a28e9217-e9b5-4c0a-9217-1c64d051d762',
         JS_SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e',
-        JS_TX_CHAR_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e',
-        JS_RX_CHAR_UUID = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+        JS_TX_CHAR_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
 
   class Moment {
     constructor() {
@@ -28,7 +27,6 @@
           server.getPrimaryService(JS_SERVICE_UUID).then(service => {
             return Promise.all([
               this._cacheCharacteristic(service, JS_TX_CHAR_UUID),
-              this._cacheCharacteristic(service, JS_RX_CHAR_UUID),
             ])
           })
         ]);
